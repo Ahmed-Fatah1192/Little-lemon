@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.littlelemon.database.MenuItemEntity
@@ -16,7 +15,7 @@ import com.example.littlelemon.viewmodel.MenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, viewModel: MenuViewModel = viewModel()) {
+fun HomeScreen(navController: NavController, viewModel: MenuViewModel) {
     val menuItems by viewModel.menuItems.collectAsState(initial = emptyList())
 
     LaunchedEffect(Unit) {
