@@ -31,10 +31,18 @@ class MainActivity : ComponentActivity() {
         val factory = MenuViewModelFactory(menuRepository)
         menuViewModel = ViewModelProvider(this, factory)[MenuViewModel::class.java]
 
+        // Check if user is logged in
+        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+
         setContent {
             LittleLemonTheme {
-                Surface {  // Ensures Material Theme is correctly applied
-                    AppNavigation(menuViewModel)
+                Surface {
+                    // Determine start destination based on login status
+                    AppWithNavigation(
+                        menuViewModel = menuViewModel,
+                        startDestination = if (isLoggedIn) Home.route else Onboarding.route
+                    )
                 }
             }
         }
