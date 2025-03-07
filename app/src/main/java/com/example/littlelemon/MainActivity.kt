@@ -3,45 +3,34 @@ package com.example.littlelemon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.Surface
+import androidx.room.Room
+import com.example.littlelemon.database.AppDatabase
+import com.example.littlelemon.repository.MenuRepository
 import com.example.littlelemon.ui.theme.LittleLemonTheme
+import com.example.littlelemon.viewmodel.MenuViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Create database instance
+        val database = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "little_lemon_db"
+        ).build()
+
+        // Create repository and view model
+        val menuDao = database.menuDao()
+        val menuRepository = MenuRepository(menuDao)
+
         setContent {
             LittleLemonTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface {  // Ensures Material Theme is correctly applied
+                    AppNavigation()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LittleLemonTheme {
-        Greeting("Android")
     }
 }
