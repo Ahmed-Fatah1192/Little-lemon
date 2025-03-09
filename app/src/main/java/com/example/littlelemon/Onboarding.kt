@@ -1,155 +1,162 @@
 package com.example.littlelemon
 
-import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.littlelemon.ui.theme.LemonYellow
-import com.example.littlelemon.ui.theme.OliveGreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.littlelemon.ui.theme.LittleLemonTheme
+import androidx.core.content.edit
+
 
 @Composable
-fun OnboardingScreen(navController: NavController? = null) {
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+fun OnboardingScreen(navController: NavHostController, sharedPreferences: SharedPreferences) {
     val context = LocalContext.current
-
-    Column(
+    return Column(
         modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxWidth().fillMaxHeight()
+            .padding(start = 12.dp, end = 12.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.Start
     ) {
-        // Header with Logo
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Little Lemon Logo",
-                modifier = Modifier.height(60.dp)
-            )
+        var firstName by remember {
+            mutableStateOf("")
         }
-
-        // Title Banner
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(OliveGreen)
-                .padding(vertical = 40.dp),
-            contentAlignment = Alignment.Center
-        ) {
+        var lastName by remember {
+            mutableStateOf("")
+        }
+        var email by remember {
+            mutableStateOf("")
+        }
+        Column {
+            Image(
+                modifier = Modifier
+                    .height(75.dp).fillMaxWidth().padding(15.dp),
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                contentScale = ContentScale.FillHeight,
+            )
+            Box(
+                modifier = Modifier
+                    .height(150.dp)
+                    .fillMaxWidth(1f)
+                    .background(color = Color(0xFF495E57))
+                    .wrapContentSize(align = Alignment.Center)
+            ) {
+                Text(text = "Let's get to know you", color = Color(0xFFFFFFFF), fontSize = 24.sp)
+            }
             Text(
-                text = "Let's get to know you",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
+                text = "Personal Information:",
+                modifier = Modifier.padding(vertical = 30.dp),
                 fontWeight = FontWeight.Bold
             )
-        }
-
-        // Personal Information
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 30.dp)
-        ) {
             Text(
-                text = "Personal information",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
+                text = "FirstName:",
+                modifier = Modifier.padding(vertical = 5.dp),
 
-            // First Name Field
-            Text(
-                text = "First name",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OutlinedTextField(
-                value = firstName,
-                onValueChange = { firstName = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                singleLine = true
-            )
-
-            // Last Name Field
-            Text(
-                text = "Last name",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OutlinedTextField(
-                value = lastName,
-                onValueChange = { lastName = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                singleLine = true
-            )
-
-            // Email Field
-            Text(
-                text = "Email",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 30.dp),
-                singleLine = true
-            )
-
-            // Register Button
-            Button(
-                onClick = {
-                    // Save user data and navigate to Home
-                    if (firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()) {
-                        val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-                        with(sharedPreferences.edit()) {
-                            putString("firstName", firstName)
-                            putString("lastName", lastName)
-                            putString("email", email)
-                            putBoolean("isLoggedIn", true)
-                            apply()
-                        }
-                        navController?.navigate(Home.route) {
-                            popUpTo(Onboarding.route) { inclusive = true }
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = LemonYellow,
-                    contentColor = Color.Black
                 )
-            ) {
-                Text(text = "Register", fontSize = 18.sp)
-            }
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(color = Color.White),
+                value = firstName,
+                textStyle = TextStyle(fontSize = 16.sp),
+                onValueChange = { firstName = it },
+            )
+            Text(
+                text = "LastName:",
+                modifier = Modifier.padding(top = 20.dp, bottom = 5.dp),
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(color = Color.White),
+                value = lastName,
+                textStyle = TextStyle(fontSize = 16.sp),
+                onValueChange = { lastName = it },
+            )
+
+            Text(
+                text = "Email:",
+                modifier = Modifier.padding(top = 20.dp, bottom = 5.dp),
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(color = Color.White),
+                value = email,
+                textStyle = TextStyle(fontSize = 16.sp),
+                onValueChange = { email = it },
+            )
         }
+
+            Button(
+                modifier = Modifier.fillMaxWidth().padding(bottom=30.dp),
+                shape = RoundedCornerShape(5.dp),
+                onClick = {
+                    if (firstName.isBlank() || lastName.isBlank() || email.isBlank()) {
+                        Toast.makeText(
+                            context,
+                            "Registration unsuccessful please enter all data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        sharedPreferences.edit { putString("FirstName", firstName) }
+                        sharedPreferences.edit { putString("LastName", lastName) }
+                        sharedPreferences.edit { putString("Email", email) }
+                        Toast.makeText(context, "Registration Successful!", Toast.LENGTH_SHORT)
+                            .show()
+                        navController.navigate(Home.route)
+                    }
+                }, colors = ButtonDefaults.buttonColors(Color(0xFFF4CE14))
+            ) {
+                Text(text = "Register", color = Color(0xFF000000))
+            }
+
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OnboardingScreenPreview() {
+    LittleLemonTheme {
+        OnboardingScreen(
+            rememberNavController(),
+            LocalContext.current.getSharedPreferences("LittleLemon", MODE_PRIVATE)
+        )
     }
 }
